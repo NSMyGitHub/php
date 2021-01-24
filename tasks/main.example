@@ -1,0 +1,17 @@
+---
+# tasks file for test2
+#
+- name: Check if service is running
+  command: "systemctl status mariadb"
+  register: db_status
+  failed_when: db_status.rc != 0
+  ignore_errors: true
+#
+#
+- debug:
+        msg: "It's not installed <{{ db_status.rc }}>"
+  when: '"MariaDB 10.5.8" not in db_status.stdout'
+#
+- name: Install the service if it's not already there
+  include_tasks: install_mariadb.yml
+  when: db_status.rc == 4

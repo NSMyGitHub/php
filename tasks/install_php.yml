@@ -1,0 +1,62 @@
+---
+#
+- name: Add repositories and install opackages for PHP on Debian-based platforms
+  block:
+        - name: Add an appropriate Ubuntu repository for PHP
+          apt_repository:
+                repo: ppa:ondrej/php
+                state: present
+                update_cache: yes
+          become: yes
+#
+        - name: Add appropriate Ubuntu repository for Apache (recommended by PHP repo author)
+          apt_repository:
+                repo: ppa:ondrej/apache2
+                state: present
+                update_cache: yes
+          become: yes
+  when: ansible_os_family == "Debian"
+#
+- name: Add repositories and install packages for PHP on RedHat platforms
+  block:
+        - name: Add appropriate RedHat repository for PHP
+          include_vars: "{{ ansible_distribution }}{{ ansible_distribution_major_version }}.yml"
+#
+        - name: Install EPEL repository for RedHat  (version specific)
+          yum:
+                  name:
+                        - "{{ RHEL_REPO }}"
+                        - "{{ REMI_REPO }}"
+                  state: present
+                  update_cache: yes
+          become: yes
+
+        - name: Enable the Remi repo for RedHat 8
+          dnf:
+                  name: "@php:remi-8.0"
+                  state: present
+          become: yes
+          when: ansible_distribution_major_version == "8"
+#
+        - name: Enable Remi repo for RedHat 7
+          yum_repository:
+                  name: remi-php80
+                  description: rphp repo
+                  baseurl: http://rpms.remirepo.net/enterprise/7/php80/$basearch/
+                  repo_gpgcheck: no
+                  gpgcheck: no
+                  state: present
+                  enabled: yes
+          become: yes
+          when: ansible_distribution_major_version == "7"
+#
+  when: ansible_os_family == "RedHat"
+  become: yes
+#  
+- name: Install PHP
+  package:
+          name:
+                  - php 
+          state: present
+          update_cache: yes
+  become: yes

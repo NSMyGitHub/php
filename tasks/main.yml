@@ -1,0 +1,14 @@
+---
+# tasks file for PHP
+#
+- name: Try to run the program, if it's there we dont need to install
+  command: "php -v"
+  register: php_status
+  failed_when: false
+  ignore_errors: true
+  no_log: true
+  changed_when: false    # This line prevents Ansible from showing the error message if the app is not installed. 
+#
+- name: If PHP is not installed go and install it
+  include_tasks: install_php.yml
+  when: php_status.rc != 0

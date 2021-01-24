@@ -1,0 +1,4 @@
+---
+RHEL_REPO: https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+REMI_REPO: https://rpms.remirepo.net/enterprise/remi-release-8.rpm
+REMI_BASEURL: http://rpms.remirepo.net/enterprise/8/php80/$basearch/
